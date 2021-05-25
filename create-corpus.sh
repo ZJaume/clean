@@ -63,7 +63,7 @@ SRC_ISO=$(python -m mtdata.iso $SRC | grep "^$SRC" | cut -f2)
 TRG_ISO=$(python -m mtdata.iso $TRG | grep "^$TRG" | cut -f2)
 
 # Clean directory
-rm *.{gz,txt}
+rm *.{gz,debug.txt}
 
 # Download corpora
 mtdata -c $MTDATA_CACHE get -l $SRC_ISO-$TRG_ISO -tr $CORPORA -o .
