@@ -59,7 +59,7 @@ JW300   eng-mlt http://opus.nlpl.eu/download.php?f=JW300/v1/xml/en-mt.xml.gz    
 ```
 
 Then, run the main script specifying the desired corpora passing their `mtdata` id's separated by commas:
-```
+```bash
 ./create-corpus.sh -l en-mt -c OPUS_TildeMODEL_v2018,JW300,OPUS_Tatoeba_v20190709,OPUS_ECB_v1
 ```
 
@@ -69,7 +69,7 @@ The script will download the corpora with `mtdata`, apply some fixes, clean, con
 Specific corpus fixes can be applied adding custom executable scripts at `fixes/` directoryi that will be called inside the pipeline.
 These scripts must follow the naming `fixes/corpus_id.sh` for processing parallel tab-separated input or `fixes/corpus_id.lang.sh` for processing monolingual data.
 For example, the `fixes/JW300.mt.sh` reads monolingual data and fixes some tokenization issues present in the JW300 corpus of Maltese:
-```
+```bash
 #!/bin/bash
 
 # Fix Maltese tokenization in JW300 that detokenizer cannot fix
@@ -78,7 +78,7 @@ sed "s/ - $(echo -ne \u200b) /-/g" \
 ```
 
 Or the `fixes/JW300.sh` that reads the tab-separated input, detokenizes it and then it prints to stdout in the same tab-separated format and fixed:
-```
+```bash
 #!/bin/bash
 set -e
 
