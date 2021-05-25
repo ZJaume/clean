@@ -1,5 +1,18 @@
+# mtdata path and signature file
+train-parts
 mtdata.signature.txt
+
+# final corpus files
 corpus.??-??
+
+# debug files
 *.debug.txt
+
+# corpus compressed files
 *.gz
+
+# vim swap files
 *.swp
+
+# langid bin file
+*.bin
