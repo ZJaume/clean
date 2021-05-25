@@ -53,10 +53,10 @@ do
     esac
 done
 
-if [ -z "$SRC" ] || [ -z "$TRG" ] || [ -z "$SIZE" ] || [ -z "$CORPORA" ];
+if [ -z "$SRC" ] || [ -z "$TRG" ] || [ -z "$CORPORA" ];
 then
-    echo $SRC $TRG $SIZE $CORPORA
-    echo "-l -c and -s options are mandatory" >&2; usage; exit 1;
+    echo $SRC $TRG $CORPORA
+    echo "-l and -c options are mandatory" >&2; usage; exit 1;
 fi
 
 SRC_ISO=$(python -m mtdata.iso $SRC | grep "^$SRC" | cut -f2)
@@ -79,11 +79,17 @@ done
 # Clean
 ./clean-corpus.sh $SRC $TRG $CORPORA
 
-# Mix them
-N_CORPUS=$(echo $CORPORA | wc -w)
-MAX_SIZE=$((SIZE / N_CORPUS))
-echo Max size per corpus $MAX_SIZE lines
-for corpus in $CORPORA
-do
-    pigz -dc $corpus.$SRC$TRG.clean.gz | shuf -n$MAX_SIZE
-done | dedup $SRC $TRG | shuf -n$SIZE >corpus.$SRC-$TRG
+if [ -z "$SIZE" ]; then
+    # Mix and near-dedup
+    pigz -dc *.$SRC$TRG.clean.gz | dedup $SRC $TRG \
+        | pigz >corpus.$SRC-$TRG.gz
+else
+    # Mix, sample and near-dedup
+    N_CORPUS=$(echo $CORPORA | wc -w)
+    MAX_SIZE=$((SIZE / N_CORPUS))
+    echo Max size per corpus: $MAX_SIZE lines
+    for corpus in $CORPORA
+    do
+        pigz -dc $corpus.$SRC$TRG.clean.gz | shuf -n$MAX_SIZE
+    done | dedup $SRC $TRG | shuf -n$SIZE >corpus.$SRC-$TRG
+fi
