@@ -1,0 +1,3 @@
+[submodule "tools/bifixer"]
+	path = tools/bifixer
+	url = https://github.com/bitextor/bifixer.git
