@@ -31,6 +31,7 @@ First of all look at the available corpora with `mtdata`:
 ```
 $ mtdata list -l en-mt
 ```
+```
 INFO:root:Loaded entries: Statmt.org:355  Paracrawl:59  Tilde:519  JoshuaIndianCoprus:29  GlobalVoices:812  UnitedNations:30  OPUS:53,321  OPUS_JW300:44,663  OPUS100:302  WikiMatrix:1,617  Other:7  Neulab_TEDTalksv1:4,455  Total:106,169
 WARNING:root:Suggestion: Use ISO 639_3 codes eng-mlt instead of en-mt. Let's make a little space for all 7000+ languages of our planet 😢.
 INFO:root:Found 24
