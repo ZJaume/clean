@@ -24,7 +24,7 @@ dedup() {
     local TRG=$2
     parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "python3 tools/bifixer/bifixer/bifixer.py -q --aggressive_dedup --ignore_segmentation --scol 1 --tcol 2 - - $SRC $TRG" \
         | LC_ALL=C sort -t $'\t' -S 10G -k3,3 -k4,4nr \
-        | LC_ALL=C sort -t $'\t' -S 10G -k3,4 -u \
+        | LC_ALL=C sort -t $'\t' -S 10G -k3,3 -u \
         | cut -f1,2
 }
 
@@ -52,6 +52,7 @@ do
             usage >&2; exit 1;;
     esac
 done
+export MTDATA=$MTDATA_CACHE
 
 if [ -z "$SRC" ] || [ -z "$TRG" ] || [ -z "$CORPORA" ];
 then
@@ -66,7 +67,7 @@ TRG_ISO=$(python -m mtdata.iso $TRG | grep "^$TRG" | cut -f2)
 rm *.{gz,debug.txt}
 
 # Download corpora
-mtdata -c $MTDATA_CACHE get -l $SRC_ISO-$TRG_ISO -tr $CORPORA -o .
+mtdata get -l $SRC_ISO-$TRG_ISO -tr $CORPORA -o .
 
 # Copy from mtdata folder
 for corpus in $CORPORA
