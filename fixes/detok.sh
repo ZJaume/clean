@@ -8,8 +8,8 @@ TRG=$2
 
 temp=$(mktemp -d)
 
-tee >(cut -f1 | sacremoses -j 6 -l $SRC detokenize >$temp/$SRC.detok) \
-    | cut -f2 | sacremoses -j 6 -l $TRG detokenize >$temp/$TRG.detok
+tee >(cut -f1 | parallel -j6 --pipe -k --block 5M sacremoses -l $SRC detokenize >$temp/$SRC.detok) \
+    | cut -f2 | parallel -j6 --pipe -k --block 5M sacremoses -l $TRG detokenize >$temp/$TRG.detok
 
 paste $temp/$SRC.detok $temp/$TRG.detok
 
