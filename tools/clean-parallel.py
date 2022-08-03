@@ -102,13 +102,13 @@ def clean_parallel(src, trg, src_lang, trg_lang):
     if char_alpha / float(len(src.replace(' ', ''))) < RATIO_ALPHA_CHARS:
         return "RATIO_CHARS"
 
-    if len(middle_period.findall(src)) != len(middle_period.findall(trg)):
-        return "MIDDLE_PERIOD"
+    #if len(middle_period.findall(src)) != len(middle_period.findall(trg)):
+    #    return "MIDDLE_PERIOD"
 
-    if src_lang in CHARS and trg_lang in CHARS:
-        if (src[0].isalpha() and not src[0].isupper() and (len(src)>1 and src[1]!=')')) \
-                or (trg[0].isalpha() and not trg[0].isupper() and (len(trg)>1 and trg[1]!=')')):
-            return "START_CAPITAL"
+    #if src_lang in CHARS and trg_lang in CHARS:
+    #    if (src[0].isalpha() and not src[0].isupper() and (len(src)>1 and src[1]!=')')) \
+    #            or (trg[0].isalpha() and not trg[0].isupper() and (len(trg)>1 and trg[1]!=')')):
+    #        return "START_CAPITAL"
 
     return None
 
