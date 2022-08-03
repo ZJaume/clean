@@ -22,7 +22,7 @@ usage() {
 dedup() {
     local SRC=$1
     local TRG=$2
-    parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "python3 tools/bifixer/bifixer/bifixer.py -q --aggressive_dedup --ignore_segmentation --scol 1 --tcol 2 - - $SRC $TRG" \
+    parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "bifixer -q --aggressive_dedup --ignore_segmentation --scol 1 --tcol 2 - - $SRC $TRG" \
         | LC_ALL=C sort -t $'\t' -S 10G -k3,3 -k4,4nr \
         | LC_ALL=C sort -t $'\t' -S 10G -k3,3 -u \
         | cut -f1,2

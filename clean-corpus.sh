@@ -52,7 +52,7 @@ for data in ${@:3}; do
     fi
     paste <(pigz -dc $data.$SRC.monofix.gz) <(pigz -dc $data.$TRG.monofix.gz) \
         | $FIX \
-        | parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "python3 $TOOLS/bifixer/bifixer/bifixer.py -q --ignore_duplicates --scol 1 --tcol 2 - - $SRC $TRG" \
+        | parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "bifixer -q --ignore_duplicates --scol 1 --tcol 2 - - $SRC $TRG" \
         | pigz > $data.$SRC$TRG.fix.gz
 
     test -s $data.$SRC$TRG.fix.gz || exit 1
