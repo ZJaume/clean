@@ -1,6 +1,7 @@
 # mtdata path and signature file
 train-parts
 mtdata.signature.txt
+references.bib*
 
 # final corpus files
 corpus.??-??
@@ -16,3 +17,6 @@ corpus.??-??
 
 # langid bin file
 *.bin
+
+# environment
+venv
