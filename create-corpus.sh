@@ -34,7 +34,7 @@ export JOBS=16
 export BLOCK=10M
 
 # Get user options
-while getopts ":c:l:s:h" options
+while getopts ":b:c:C:j:l:s:h" options
 do
     case "${options}" in
         b) BLOCK=$OPTARG;;
