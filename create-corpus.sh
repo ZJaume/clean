@@ -73,8 +73,8 @@ mtdata get -l $SRC_ISO-$TRG_ISO -tr $CORPORA -o .
 for corpus in $CORPORA
 do
     # Copy and compress files from mtdata directory
-    pigz -c train-parts/$corpus-"$SRC_ISO"_$TRG_ISO.$SRC_ISO >$corpus.$SRC.gz
-    pigz -c train-parts/$corpus-"$SRC_ISO"_$TRG_ISO.$TRG_ISO >$corpus.$TRG.gz
+    pigz -c train-parts/$corpus.$SRC_ISO >$corpus.$SRC.gz
+    pigz -c train-parts/$corpus.$TRG_ISO >$corpus.$TRG.gz
 done
 
 # Clean
