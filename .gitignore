@@ -2,6 +2,7 @@
 train-parts
 mtdata.signature.txt
 references.bib*
+errors.tsv
 
 # final corpus files
 corpus.??-??
