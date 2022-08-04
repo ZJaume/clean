@@ -24,7 +24,7 @@ for data in ${@:3}; do
     for lng in $SRC $TRG; do
 
         pigz -dc $data.$lng.gz \
-            | parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "perl $TOOLS/remove-non-printing-char.perl | perl $TOOLS/normalize-punctuation.perl -l $lng" \
+            | parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "perl $TOOLS/remove-non-printing-char.perl" \
             | pigz > $data.$lng.nrm.gz
     done
 
@@ -76,11 +76,13 @@ for data in ${@:3}; do
         2> $data.$SRC$TRG.clean.debug.txt \
         | pigz > $data.$SRC$TRG.clean.gz
 
-    pigz -dc $data.$SRC$TRG.clean.gz | cut -f1 | pigz > $data.$SRC.clean.gz
-    pigz -dc $data.$SRC$TRG.clean.gz | cut -f2 | pigz > $data.$TRG.clean.gz
+    # No need to separate
+    #pigz -dc $data.$SRC$TRG.clean.gz | cut -f1 | pigz > $data.$SRC.clean.gz
+    #pigz -dc $data.$SRC$TRG.clean.gz | cut -f2 | pigz > $data.$TRG.clean.gz
+    #test -s $data.$SRC.clean.gz || exit 1
+    #test -s $data.$TRG.clean.gz || exit 1
 
-    test -s $data.$SRC.clean.gz || exit 1
-    test -s $data.$TRG.clean.gz || exit 1
+    test -s $data.$SRC$TRG.clean.gz || exit 1
 
     # Remove $data from intermediate steps
     #rm -f *.nrm.gz *.fix.gz *.langid.gz *.monofix.gz
