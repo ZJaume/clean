@@ -11,10 +11,10 @@ set -e
 TOOLS=./tools
 SRC=$1
 TRG=$2
-JOBS=24
-BLOCK=10M
+JOBS=$3
+BLOCK=$4
 
-for data in ${@:3}; do
+for data in ${@:5}; do
     # Check if files exist
     test -s $data.$SRC.gz || exit 1
     test -s $data.$TRG.gz || exit 1

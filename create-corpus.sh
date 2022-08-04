@@ -78,7 +78,7 @@ do
 done
 
 # Clean
-./clean-corpus.sh $SRC $TRG $CORPORA
+./clean-corpus.sh $SRC $TRG $JOBS $BLOCK $CORPORA
 
 if [ -z "$SIZE" ]; then
     # Mix and near-dedup
