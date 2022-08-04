@@ -18,6 +18,7 @@ import sys
 BIN = "lid.176.bin"
 URL = "https://dl.fbaipublicfiles.com/fasttext/supervised-models/{}".format(BIN)
 
+fasttext.FastText.eprint = lambda x: None
 
 def main():
     args = parse_user_args()
@@ -32,7 +33,7 @@ def main():
 
     for line in sys.stdin:
         fields = line.strip().split("\t")
-        lid = model.predict(fields[args.field])
+        lid = model.predict(fields[args.field].lower())
         sys.stdout.write("{}\t{}".format(lid[0][0][-2:], line))
 
 
