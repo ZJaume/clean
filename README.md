@@ -13,6 +13,11 @@ pip install -r requirements.txt
 pip install -r tools/bifixer/requirements.txt
 ```
 
+Install zstd for compression of intermediate files:
+```
+sudo apt install zstd
+```
+
 ## Usage
 ```
 Usage: create-corpus.sh [options]

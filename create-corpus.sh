@@ -64,7 +64,7 @@ SRC_ISO=$(python -m mtdata.iso $SRC | grep "^$SRC" | cut -f2)
 TRG_ISO=$(python -m mtdata.iso $TRG | grep "^$TRG" | cut -f2)
 
 # Clean directory
-rm *.{gz,debug.txt}
+rm *.{zst,debug.txt}
 
 # Download corpora
 mtdata get -l $SRC_ISO-$TRG_ISO -tr $CORPORA -o .
@@ -73,8 +73,8 @@ mtdata get -l $SRC_ISO-$TRG_ISO -tr $CORPORA -o .
 for corpus in $CORPORA
 do
     # Copy and compress files from mtdata directory
-    pigz -c train-parts/$corpus.$SRC_ISO >$corpus.$SRC.gz
-    pigz -c train-parts/$corpus.$TRG_ISO >$corpus.$TRG.gz
+    zstdmt -c train-parts/$corpus.$SRC_ISO >$corpus.$SRC.zst
+    zstdmt -c train-parts/$corpus.$TRG_ISO >$corpus.$TRG.zst
 done
 
 # Clean
@@ -82,8 +82,8 @@ done
 
 if [ -z "$SIZE" ]; then
     # Mix and near-dedup
-    pigz -dc *.$SRC$TRG.clean.gz | dedup $SRC $TRG \
-        | pigz >corpus.$SRC-$TRG.gz
+    zstdcat *.$SRC$TRG.clean.zst | dedup $SRC $TRG \
+        | zstdmt >corpus.$SRC-$TRG.zst
 else
     # Mix, sample and near-dedup
     N_CORPUS=$(echo $CORPORA | wc -w)
@@ -91,6 +91,6 @@ else
     echo Max size per corpus: $MAX_SIZE lines
     for corpus in $CORPORA
     do
-        pigz -dc $corpus.$SRC$TRG.clean.gz | shuf -n$MAX_SIZE
+        zstdcat $corpus.$SRC$TRG.clean.zst | shuf -n$MAX_SIZE
     done | dedup $SRC $TRG | shuf -n$SIZE >corpus.$SRC-$TRG
 fi

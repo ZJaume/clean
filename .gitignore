@@ -11,6 +11,7 @@ corpus.??-??
 
 # corpus compressed files
 *.gz
+*.zst
 
 # vim swap files
 *.swp

@@ -16,30 +16,30 @@ BLOCK=$4
 
 for data in ${@:5}; do
     # Check if files exist
-    test -s $data.$SRC.gz || exit 1
-    test -s $data.$TRG.gz || exit 1
+    test -s $data.$SRC.zst || exit 1
+    test -s $data.$TRG.zst || exit 1
 
     ######################################################################
     # Basic preprocessing
     for lng in $SRC $TRG; do
 
-        pigz -dc $data.$lng.gz \
+        zstdcat $data.$lng.zst \
             | parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "perl $TOOLS/remove-non-printing-char.perl" \
-            | pigz > $data.$lng.nrm.gz
+            | zstdmt > $data.$lng.nrm.zst
     done
 
-    test -s $data.$SRC.nrm.gz || exit 1
-    test -s $data.$TRG.nrm.gz || exit 1
+    test -s $data.$SRC.nrm.zst || exit 1
+    test -s $data.$TRG.nrm.zst || exit 1
 
     #####################################################################
     # Apply monolingual fixes
     for lng in $SRC $TRG; do
         if [[ ! -x fixes/$data.$lng.sh ]]; then
-            cp $data.$lng.nrm.gz $data.$lng.monofix.gz
+            cp $data.$lng.nrm.zst $data.$lng.monofix.zst
         else
-            pigz -dc $data.$lng.nrm.gz \
+            zstdcat $data.$lng.nrm.zst \
                 | fixes/$data.$lng.sh \
-                | pigz >$data.$lng.monofix.gz
+                | zstdmt >$data.$lng.monofix.zst
         fi
     done
 
@@ -50,42 +50,42 @@ for data in ${@:5}; do
     else
         FIX=cat
     fi
-    paste <(pigz -dc $data.$SRC.monofix.gz) <(pigz -dc $data.$TRG.monofix.gz) \
+    paste <(zstdcat $data.$SRC.monofix.zst) <(zstdcat $data.$TRG.monofix.zst) \
         | $FIX \
         | parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "bifixer -q --ignore_duplicates --scol 1 --tcol 2 - - $SRC $TRG" \
-        | pigz > $data.$SRC$TRG.fix.gz
+        | zstdmt > $data.$SRC$TRG.fix.zst
 
-    test -s $data.$SRC$TRG.fix.gz || exit 1
+    test -s $data.$SRC$TRG.fix.zst || exit 1
 
     ######################################################################
     # Language identification
     export OPENBLAS_NUM_THREADS=1
-    pigz -dc $data.$SRC$TRG.fix.gz \
+    zstdcat $data.$SRC$TRG.fix.zst \
         | parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "python3 $TOOLS/langid-fasttext.py -f 1 | python3 $TOOLS/langid-fasttext.py -f 1" \
         | tee >(grep -Pv "^$SRC\t$TRG\t" > $data.$SRC$TRG.langid.debug.txt) \
         | grep -P "^$SRC\t$TRG\t" \
         | cut -f3,4 \
-        | pigz > $data.$SRC$TRG.langid.gz
+        | zstdmt > $data.$SRC$TRG.langid.zst
 
-    test -s $data.$SRC$TRG.langid.gz
+    test -s $data.$SRC$TRG.langid.zst
 
     ######################################################################
     # Rule-based filtering
-    pigz -dc $data.$SRC$TRG.langid.gz \
+    zstdcat $data.$SRC$TRG.langid.zst \
         | parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "python3 $TOOLS/clean-parallel.py -l1 $SRC -l2 $TRG --debug" \
         2> $data.$SRC$TRG.clean.debug.txt \
-        | pigz > $data.$SRC$TRG.clean.gz
+        | zstdmt > $data.$SRC$TRG.clean.zst
 
     # No need to separate
-    #pigz -dc $data.$SRC$TRG.clean.gz | cut -f1 | pigz > $data.$SRC.clean.gz
-    #pigz -dc $data.$SRC$TRG.clean.gz | cut -f2 | pigz > $data.$TRG.clean.gz
-    #test -s $data.$SRC.clean.gz || exit 1
-    #test -s $data.$TRG.clean.gz || exit 1
+    #zstdcat $data.$SRC$TRG.clean.zst | cut -f1 | zstdmt > $data.$SRC.clean.zst
+    #zstdcat $data.$SRC$TRG.clean.zst | cut -f2 | zstdmt > $data.$TRG.clean.zst
+    #test -s $data.$SRC.clean.zst || exit 1
+    #test -s $data.$TRG.clean.zst || exit 1
 
-    test -s $data.$SRC$TRG.clean.gz || exit 1
+    test -s $data.$SRC$TRG.clean.zst || exit 1
 
     # Remove $data from intermediate steps
-    #rm -f *.nrm.gz *.fix.gz *.langid.gz *.monofix.gz
+    #rm -f *.nrm.zst *.fix.zst *.langid.zst *.monofix.zst
     wc -l *.debug.txt
 done
 
