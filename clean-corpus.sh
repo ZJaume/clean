@@ -24,7 +24,7 @@ for data in ${@:5}; do
     for lng in $SRC $TRG; do
 
         zstdcat $data.$lng.zst \
-            | parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "perl $TOOLS/remove-non-printing-char.perl" \
+            | $TOOLS/remove-non-printing-char.perl \
             | zstdmt > $data.$lng.nrm.zst
     done
 
@@ -35,7 +35,7 @@ for data in ${@:5}; do
     # Apply monolingual fixes
     for lng in $SRC $TRG; do
         if [[ ! -x fixes/$data.$lng.sh ]]; then
-            cp $data.$lng.nrm.zst $data.$lng.monofix.zst
+            ln -sf $data.$lng.nrm.zst $data.$lng.monofix.zst
         else
             zstdcat $data.$lng.nrm.zst \
                 | fixes/$data.$lng.sh \
