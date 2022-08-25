@@ -20,11 +20,8 @@ usage() {
 }
 
 dedup() {
-    local SRC=$1
-    local TRG=$2
-    parallel --no-notice --pipe -k -j$JOBS --block $BLOCK "bifixer -q --aggressive_dedup --ignore_segmentation --scol 1 --tcol 2 - - $SRC $TRG" \
-        | LC_ALL=C sort -t $'\t' -S 10G -k3,3 -k4,4nr \
-        | LC_ALL=C sort -t $'\t' -S 10G -k3,3 -u \
+    parallel --pipe -j6 --block 30M ./tools/hash-seg.py -a \
+        | ./tools/superdedup.py \
         | cut -f1,2
 }
 
@@ -82,7 +79,7 @@ done
 
 if [ -z "$SIZE" ]; then
     # Mix and near-dedup
-    zstdcat *.$SRC$TRG.clean.zst | dedup $SRC $TRG \
+    zstdcat *.$SRC$TRG.clean.zst | dedup \
         | zstdmt >corpus.$SRC-$TRG.zst
 else
     # Mix, sample and near-dedup
