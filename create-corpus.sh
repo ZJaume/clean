@@ -26,17 +26,19 @@ dedup() {
 }
 
 # Default options
+DEDUP=TRUE
 MTDATA_CACHE=./cache
 export JOBS=16
 export BLOCK=10M
 
 # Get user options
-while getopts ":b:c:C:j:l:s:h" options
+while getopts ":b:c:C:dj:l:s:h" options
 do
     case "${options}" in
         b) BLOCK=$OPTARG;;
         c) CORPORA=${OPTARG//,/ };;
         C) MTDATA_CACHE=$OPTARG;;
+        d) DEDUP=FALSE;;
         j) JOBS=$OPTARG;;
         l) IFS='-' read SRC TRG <<< $OPTARG;;
         s) SIZE=$OPTARG;;
@@ -57,6 +59,7 @@ then
     echo "-l and -c options are mandatory" >&2; usage; exit 1;
 fi
 
+
 SRC_ISO=$(python -m mtdata.iso $SRC | grep "^$SRC" | cut -f2)
 TRG_ISO=$(python -m mtdata.iso $TRG | grep "^$TRG" | cut -f2)
 
@@ -64,7 +67,7 @@ TRG_ISO=$(python -m mtdata.iso $TRG | grep "^$TRG" | cut -f2)
 rm *.{zst,debug.txt}
 
 # Download corpora
-mtdata get -l $SRC_ISO-$TRG_ISO -tr $CORPORA -o .
+mtdata get -j $JOBS -l $SRC_ISO-$TRG_ISO -tr $CORPORA -o .
 
 # Copy from mtdata folder
 for corpus in $CORPORA
@@ -79,8 +82,12 @@ done
 
 if [ -z "$SIZE" ]; then
     # Mix and near-dedup
-    zstdcat *.$SRC$TRG.clean.zst | dedup \
-        | zstdmt >corpus.$SRC-$TRG.zst
+    if [ "$DEDUP" == "FALSE" ]; then
+        cat *.$SRC$TRG.clean.zst >corpus.$SRC-$TRG.zst
+    else
+        zstdcat *.$SRC$TRG.clean.zst | dedup \
+            | zstdmt >corpus.$SRC-$TRG.zst
+    fi
 else
     # Mix, sample and near-dedup
     N_CORPUS=$(echo $CORPORA | wc -w)
