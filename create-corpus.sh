@@ -14,6 +14,7 @@ usage() {
     echo "                      from 'mtdata list -l SRC-TRG'"
     echo "      -C CACHE        mtdata cache directory"
     echo "                      Default: $MTDATA_CACHE"
+    echo "      -d              Dedup final corpus file"
     echo "      -j JOBS         Number of jobs of parallel"
     echo "      -l SRC-TRG      Language pair"
     echo "      -s SIZE         Number of sentences"
