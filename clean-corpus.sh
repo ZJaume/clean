@@ -47,6 +47,7 @@ for data in ${@:5}; do
     # Apply bilingual fixes and bifixer, not dedup
     if [[ -x fixes/$data.sh ]]; then
         FIX="fixes/$data.sh $SRC $TRG"
+        echo Applying bilingual fix "$FIX" >&2
     else
         FIX=cat
     fi

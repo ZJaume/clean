@@ -1,6 +1,7 @@
 #!/bin/bash
-set -e
+set -eu
 
+source venv/bin/activate
 # Detokenize
 
 SRC=$1
