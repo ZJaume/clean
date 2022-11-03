@@ -1,5 +1,5 @@
 fasttext==0.9.2
 mtdata>=0.3,<4
 regex
-sacremoses==0.0.43
+sacremoses==0.0.53
 bifixer<7
